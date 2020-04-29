@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import dev.colleguesapi.entites.Collegue;
-import dev.colleguesapi.exceptions.CollegueException;
+import dev.colleguesapi.exceptions.CollegueByMatriculeNotExistException;
+import dev.colleguesapi.exceptions.CollegueByNomNotExistException;
 import dev.colleguesapi.service.CollegueService;
 
 @RestController
@@ -45,8 +45,16 @@ public class CollegueController {
     }
 	
 	 /* Gestion des EXCEPTIONS */
-    @ExceptionHandler(CollegueException.class)
-  	public ResponseEntity<ErreurDto> quandClientException(CollegueException ex) {
+    
+    @ExceptionHandler(CollegueByNomNotExistException.class)
+  	public ResponseEntity<ErreurDto> quandRechercherCollegueParNomException(CollegueByNomNotExistException ex) {
+    	ErreurDto erreurDto = new ErreurDto();
+    	erreurDto.addMessage(ex.getMessage());
+    	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erreurDto);
+  	}
+    
+    @ExceptionHandler(CollegueByMatriculeNotExistException.class)
+  	public ResponseEntity<ErreurDto> quandRechercherCollegueParMatriculeException(CollegueByMatriculeNotExistException ex) {
     	ErreurDto erreurDto = new ErreurDto();
     	erreurDto.addMessage(ex.getMessage());
     	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(erreurDto);

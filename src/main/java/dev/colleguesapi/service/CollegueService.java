@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 import dev.colleguesapi.controller.CollegueDto;
 import dev.colleguesapi.entites.Collegue;
-import dev.colleguesapi.exceptions.CollegueException;
+import dev.colleguesapi.exceptions.CollegueByMatriculeNotExistException;
+import dev.colleguesapi.exceptions.CollegueByNomNotExistException;
 import dev.colleguesapi.repository.CollegueRepository;
 
 /** Représentation 
@@ -37,7 +38,7 @@ public class CollegueService {
 			}
 		}
 		if (colleguesTrouves.isEmpty()) {
-			throw new CollegueException("le collègue recherché n'existe pas.");
+			throw new CollegueByNomNotExistException("le nom inséré ne correspond à aucun collègue.");
 		}
 		return colleguesTrouves;
 	}
@@ -45,15 +46,19 @@ public class CollegueService {
 	public CollegueDto rechercheCollegueParMatricule(String matricule) {
 		 
 		CollegueDto collegueRecup = new CollegueDto();
-		
+		Boolean collegueTrouve = false;
 		for (Collegue collegue : collegueRepository.findAll()) {
 			if (collegue.getMatricule().equals(matricule)) {
+				collegueTrouve = true;
 				collegueRecup.setMatricule(matricule);
 				collegueRecup.setNom(collegue.getNom());
 				collegueRecup.setPrenoms(collegue.getPrenoms());
 				collegueRecup.setDateDeNaissance(collegue.getDateDeNaissance());
 				collegueRecup.setPhotoUrl(collegue.getPhotoUrl());
 			}
+		}
+		if (collegueTrouve == false) {
+			throw new CollegueByMatriculeNotExistException("le matricule inséré ne correspond à aucun collègue.");
 		}
 		return collegueRecup;
 		
